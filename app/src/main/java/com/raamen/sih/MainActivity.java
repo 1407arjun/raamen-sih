@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
             System.out.println(Arrays.toString(data));
 
-            double[] avg = ImageProcessing.decode(data.clone(), width, height);
+            double[] avg = ImageProcessing.decode(data.clone(), height, width);
 
             ArrayList<Double> avgArr = new ArrayList<>();
             avgArr.add(avg[0]);
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
             long endTime = System.currentTimeMillis();
             double totalTimeInSecs = (endTime - startTime) / 1000d;
-            if (totalTimeInSecs >= 2) {
+            if (totalTimeInSecs >= 15) {
                 Log.i("helloavg", Integer.toString(AvgList.size()));
                 Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                 intent.putExtra("avg", AvgList);

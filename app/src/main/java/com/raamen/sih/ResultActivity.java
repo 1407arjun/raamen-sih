@@ -38,21 +38,28 @@ public class ResultActivity extends AppCompatActivity {
             //System.out.println(str);
             String url = "https://visara-api.herokuapp.com/";
 
-            JSONArray arr = new JSONArray();
-
-            for (ArrayList<Double> d: str) {
-                JSONArray a = new JSONArray();
-                for (Double d1: d) {
-                    Log.i("hellod", Double.toString(d1));
-                    a.put(d1);
-                    Log.i("helloa", a.toString());
-                }
-                arr.put(a);
-            }
-
-            Log.i("hellojson", arr.toString());
-
             try {
+                JSONArray arr = new JSONArray();
+
+                double sumr = 0, sumg = 0, sumb = 0, sdr = 0, sdg = 0, sdb = 0;
+                for (ArrayList<Double> d: str) {
+                    sumr += d.get(0);
+                    sdr += d.get(1);
+                    sumg += d.get(2);
+                    sdg += d.get(3);
+                    sumb += d.get(4);
+                    sdb += d.get(5);
+                }
+
+                arr.put((double) sumr/str.size());
+                arr.put((double) sdr/str.size());
+                arr.put((double) sumg/str.size());
+                arr.put((double) sdg/str.size());
+                arr.put((double) sumb/str.size());
+                arr.put((double) sdb/str.size());
+
+
+                Log.i("hellojson", arr.toString());
                 JSONObject jsonParams = new JSONObject();
                 jsonParams.put("images", arr);
                 Log.i("hellojson", jsonParams.toString());
