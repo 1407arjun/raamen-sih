@@ -26,6 +26,9 @@
             android:name=".Accelerometer"
             android:exported="false" />
         <activity
+            android:name=".TimerActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity

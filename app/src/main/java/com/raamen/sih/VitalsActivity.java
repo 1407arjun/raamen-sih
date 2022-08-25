@@ -22,21 +22,27 @@ public class VitalsActivity extends AppCompatActivity {
         spo2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(VitalsActivity.this, MainActivity.class));
+                Intent intent = new Intent(VitalsActivity.this, TimerActivity.class);
+                intent.putExtra("name", "spo2");
+                startActivity(intent);
             }
         });
 
         hr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(VitalsActivity.this, HeartBeatActivity.class));
+                Intent intent = new Intent(VitalsActivity.this, TimerActivity.class);
+                intent.putExtra("name", "hr");
+                startActivity(intent);
             }
         });
 
         resp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(VitalsActivity.this, Accelerometer.class));
+                Intent intent = new Intent(VitalsActivity.this, TimerActivity.class);
+                intent.putExtra("name", "resp");
+                startActivity(intent);
             }
         });
     }
