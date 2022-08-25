@@ -26,6 +26,13 @@ public class VitalsActivity extends AppCompatActivity {
             }
         });
 
+        hr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(VitalsActivity.this, HeartBeatActivity.class));
+            }
+        });
+
         resp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
