@@ -4,7 +4,7 @@
     package="com.raamen.sih">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.flash" />
@@ -23,12 +23,15 @@
         android:theme="@style/Theme.SIH"
         tools:targetApi="31">
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".ResultActivity"
             android:exported="false"
             android:label="@string/title_activity_result"
             android:theme="@style/Theme.SIH.NoActionBar" />
         <activity
-            android:name=".MainActivity"
+            android:name=".VitalsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
