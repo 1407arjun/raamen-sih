@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
         android:gravity="center"
-        android:text="Your oxygen saturation level will prevent hupoxic tissue injury and ensure safety"
+        android:text="Your data would be stored on our cloud for easy access"
         android:textColor="#2A0371"
         android:textSize="24dp"
         android:textStyle="bold"

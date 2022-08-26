@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -102,19 +103,21 @@ public class MainActivity extends AppCompatActivity {
                 int width = size.width;
                 int height = size.height;
 
-                System.out.println(Arrays.toString(data));
-
                 double[] avg = ImageProcessing.decode(data.clone(), height, width);
 
-                ArrayList<Double> avgArr = new ArrayList<>();
-                avgArr.add(avg[0]);
-                avgArr.add(avg[1]);
-                avgArr.add(avg[2]);
-                avgArr.add(avg[3]);
-                avgArr.add(avg[4]);
-                avgArr.add(avg[5]);
+                if (avg[0] < 200) {
+                    Toast.makeText(MainActivity.this, "Retrying measurement", Toast.LENGTH_SHORT).show();
+                } else {
+                    ArrayList<Double> avgArr = new ArrayList<>();
+                    avgArr.add(avg[0]);
+                    avgArr.add(avg[1]);
+                    avgArr.add(avg[2]);
+                    avgArr.add(avg[3]);
+                    avgArr.add(avg[4]);
+                    avgArr.add(avg[5]);
 
-                AvgList.add(avgArr);
+                    AvgList.add(avgArr);
+                }
 
                 long endTime = System.currentTimeMillis();
                 double totalTimeInSecs = (endTime - startTime) / 1000d;
@@ -158,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                                         try {
                                             Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                                             intent.putExtra("name", "Blood Oxygen");
-                                            intent.putExtra("score", response.getDouble("spo2"));
+                                            intent.putExtra("score", response.getDouble("spo2") < 70 || response.getDouble("spo2") > 120 ? (double) -1 : response.getDouble("spo2"));
                                             intent.putExtra("normal", "92 - 99");
                                             startActivity(intent);
                                             finish();
@@ -203,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ++counter;
 
-                ProgP = inc++ / 34;
+                ProgP = inc++ / 16;
                 progress.setProgress(ProgP);
 
             }

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -128,11 +129,13 @@ public class HeartBeatActivity extends AppCompatActivity {
                 int width = size.width;
                 int height = size.height;
 
-                System.out.println(Arrays.toString(data));
-
                 double avg = ImageProcessing.redAverage(data.clone(), height, width);
 
-                AvgList.add(avg);
+                if (avg < 200) {
+                    Toast.makeText(HeartBeatActivity.this, "Retrying measurement", Toast.LENGTH_SHORT).show();
+                } else {
+                    AvgList.add(avg);
+                }
 
                 long endTime = System.currentTimeMillis();
                 double totalTimeInSecs = (endTime - startTime) / 1000d;
@@ -147,10 +150,13 @@ public class HeartBeatActivity extends AppCompatActivity {
                     }
 
                     int peaks = printPeaksTroughs(arr, arr.length);
+                    Log.i("hellopeak", Integer.toString(peaks));
+
+
                     Intent intent = new Intent(HeartBeatActivity.this, ResultActivity.class);
                     intent.putExtra("name", "Heart Rate");
-                    intent.putExtra("score", (double) peaks * 4);
-                    intent.putExtra("normal", "60 - 75");
+                    intent.putExtra("score", peaks < 50 ? (double) -1 : (double) peaks);
+                    intent.putExtra("normal", "60 - 100");
                     startActivity(intent);
                     finish();
 
@@ -158,7 +164,7 @@ public class HeartBeatActivity extends AppCompatActivity {
                 }
                 ++counter;
 
-                ProgP = inc++ / 34;
+                ProgP = inc++ / 16;
                 progress.setProgress(ProgP);
 
             }
