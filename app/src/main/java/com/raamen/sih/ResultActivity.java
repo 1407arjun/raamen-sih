@@ -54,7 +54,7 @@ public class ResultActivity extends AppCompatActivity {
 
             map.put("date", System.currentTimeMillis());
             map.put("type", intent.getStringExtra("name"));
-            map.put("score", intent.getDoubleExtra("score", 0));
+            map.put("score", intent.getIntExtra("score", 0));
             database.child(Long.toString(System.currentTimeMillis())).setValue(map);
         }
     }

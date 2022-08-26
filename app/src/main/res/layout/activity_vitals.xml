@@ -37,6 +37,7 @@
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="#4E22AB"
+            app:cardCornerRadius="8dp"
             app:cardElevation="4dp">
 
             <RelativeLayout
@@ -72,6 +73,7 @@
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="#4E22AB"
+            app:cardCornerRadius="8dp"
             app:cardElevation="4dp">
 
             <RelativeLayout
@@ -87,7 +89,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="Blood Pressure"
+                    android:text="Blood \nPressure"
                     android:textColor="#FFFFFF"
                     android:textSize="24dp" />
 
@@ -115,12 +117,50 @@
         app:layout_constraintTop_toBottomOf="@+id/layout1">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/resp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="#4E22AB"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#4E22AB">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imageView4"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="Respiration \nRate"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="102dp"
+                    android:layout_height="102dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    tools:srcCompat="@drawable/image11" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/hr"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="#4E22AB"
+            app:cardCornerRadius="8dp"
             app:cardElevation="4dp">
 
             <RelativeLayout
@@ -136,8 +176,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:text="Heart Rate"
+                    android:textAlignment="center"
                     android:textColor="#FFFFFF"
-                    android:textSize="29dp" />
+                    android:textSize="24dp" />
 
                 <ImageView
                     android:id="@+id/imageView3"
@@ -150,12 +191,13 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/resp"
+            android:id="@+id/stress"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="#4E22AB"
+            app:cardCornerRadius="8dp"
             app:cardElevation="4dp">
 
             <RelativeLayout
@@ -164,18 +206,19 @@
                 android:background="#4E22AB">
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imageView4"
+                    android:layout_below="@+id/imageView5"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:text="Respiration Rate"
+                    android:text="Stress"
+                    android:textAlignment="center"
                     android:textColor="#FFFFFF"
                     android:textSize="24dp" />
 
                 <ImageView
-                    android:id="@+id/imageView4"
+                    android:id="@+id/imageView5"
                     android:layout_width="102dp"
                     android:layout_height="102dp"
                     android:layout_centerHorizontal="true"
