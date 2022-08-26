@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Accelerometer extends AppCompatActivity implements SensorEventListener {
     SensorManager sensorManager;
@@ -55,11 +56,27 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
                 int peaks = printPeaksTroughs(arr2, arr2.length);
                 Log.i("hellopeaks", Integer.toString(peaks*2));
 
+                double sum = 0;
+                for (int i = 0; i < arr.length; i++) {
+                    sum += arr[i];
+                }
 
+                double avg = (double) sum/arr.length;
+
+                double sum2 = 0;
+                for (int i = 0; i < arr.length; i++) {
+                    sum2 += Math.pow(arr[i] - avg, 2);
+                }
+
+                double var = (double) sum2/(arr.length - 1);
+                double sd = Math.sqrt(var);
+
+                Log.i("hellosd", Arrays.toString(arr));
+                Log.i("hellosd", Double.toString(sd));
 
                 Intent intent = new Intent(Accelerometer.this, ResultActivity.class);
                 intent.putExtra("name", "Respiratory Rate");
-                intent.putExtra("score",  peaks*2);
+                intent.putExtra("score",  sd < 0.035 ? -1 : peaks*2);
                 intent.putExtra("normal", "12 - 16");
                 startActivity(intent);
                 finish();
