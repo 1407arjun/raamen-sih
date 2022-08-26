@@ -1,12 +1,8 @@
 package com.raamen.sih;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -14,29 +10,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 
-import com.google.android.material.snackbar.Snackbar;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-public class HeartBeatActivity extends AppCompatActivity {
+public class BloodPressureActivity extends AppCompatActivity {
     public ArrayList<Integer> array;
 
     private final int REQUEST_CODE_CAMERA = 0;
@@ -111,6 +93,32 @@ public class HeartBeatActivity extends AppCompatActivity {
         return count;
     }
 
+    public double getET(double arr[], int n, int peaks)
+    {
+        double[][] arr1 = new double[peaks][2];
+        int j = 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (isPeak(arr, n, arr[i], i - 1, i + 1))
+            {
+                arr1[j++] = new double[]{arr[i], i*50};
+            }
+        }
+
+        int mid1 = arr1.length/2;
+        int mid2 = arr1.length/2 + 1;
+
+        double et;
+        if (arr1[mid1][0] > arr1[mid2][0]) {
+             et = arr1[mid1][1] - arr1[mid1 - 1][1];
+        } else {
+            et = arr1[mid2][1] - arr1[mid1][1];
+        }
+
+        return et;
+    }
+
     private final CameraService cameraService = new CameraService(this, mainHandler);
 
     @Override
@@ -130,6 +138,7 @@ public class HeartBeatActivity extends AppCompatActivity {
 
     void measurePulse(TextureView textureView, CameraService cameraService) {
 
+        // 20 times a second, get the amount of red on the picture.
         final int measurementInterval = 45;
         final int measurementLength = 15000;
         final int clipLength = 3500;
@@ -171,15 +180,36 @@ public class HeartBeatActivity extends AppCompatActivity {
                 }
 
                 int peaks = printPeaksTroughs(arr, arr.length);
+                int hr = peaks*2;
                 Log.i("hellopeak", Integer.toString(peaks*2));
+
+                double et = getET(arr, arr.length, peaks);
+                Log.i("helloet", Double.toString(et));
+
+                int gender = 1;
+                double W = 75;
+                double H = 6;
+                int age = 20;
+
+                double bsa = 0.007184*Math.pow(W, 0.425)*Math.pow(H, 0.725);
+                Log.i("hellobsa", Double.toString(bsa));
+                double sv = -6.6 + 0.25*(et - 35) - 0.62*hr + 40.4*bsa - 0.51*age;
+                Log.i("hellosv", Double.toString(sv));
+                double pp = sv/((0.013*W - 0.007*age - 0.004*hr) + 1.307);
+                Log.i("hellopp", Double.toString(pp));
+
+                double sp = (93.33 + 1.5*pp);
+                Log.i("hellosp", Double.toString(sp));
+                double dp = (93.33 - pp/3);
+                Log.i("hellodp", Double.toString(dp));
 
                 if (cameraService != null)
                     cameraService.stop();
 
-                Intent intent = new Intent(HeartBeatActivity.this, ResultActivity.class);
-                intent.putExtra("name", "Heart Rate");
-                intent.putExtra("score", (peaks*2) < 50 ? -1 : peaks*2);
-                intent.putExtra("normal", "60 - 100");
+                Intent intent = new Intent(BloodPressureActivity.this, ResultActivity.class);
+                intent.putExtra("name", "Blood Pressure");
+                intent.putExtra("score", Integer.toString((int) sp) + "/" + Integer.toString((int) dp));
+                intent.putExtra("normal", "90/60 - 120/80");
                 startActivity(intent);
                 finish();
             }

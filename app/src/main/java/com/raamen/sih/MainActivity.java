@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                                         try {
                                             Intent intent = new Intent(MainActivity.this, ResultActivity.class);
                                             intent.putExtra("name", "Blood Oxygen");
-                                            intent.putExtra("score", response.getDouble("spo2") < 70 || response.getDouble("spo2") > 120 ? (double) -1 : response.getDouble("spo2"));
+                                            intent.putExtra("score", response.getDouble("spo2") < 70 || response.getDouble("spo2") > 120 ? -1 : (int) response.getDouble("spo2"));
                                             intent.putExtra("normal", "92 - 99");
                                             startActivity(intent);
                                             finish();

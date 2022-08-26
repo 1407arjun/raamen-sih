@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/img_5.xml" value="0.1785" />
         <entry key="app/src/main/res/drawable/rectangle_1.xml" value="0.1785" />
         <entry key="app/src/main/res/layout/activity_accelerometer.xml" value="0.14175724637681159" />
+        <entry key="app/src/main/res/layout/activity_bloodpressure.xml" value="0.14175724637681159" />
         <entry key="app/src/main/res/layout/activity_heartbeat.xml" value="0.29896545410156256" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.14175724637681159" />
         <entry key="app/src/main/res/layout/activity_result.xml" value="0.22925872802734376" />

@@ -42,6 +42,9 @@ public class TimerActivity extends AppCompatActivity {
                     case "spo2":
                       intent = new Intent(TimerActivity.this, MainActivity.class);
                       break;
+                    case "bp":
+                        intent = new Intent(TimerActivity.this, BloodPressureActivity.class);
+                        break;
                     case "hr":
                         intent = new Intent(TimerActivity.this, HeartBeatActivity.class);
                         break;

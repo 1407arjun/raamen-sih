@@ -28,6 +28,15 @@ public class VitalsActivity extends AppCompatActivity {
             }
         });
 
+        bp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VitalsActivity.this, TimerActivity.class);
+                intent.putExtra("name", "bp");
+                startActivity(intent);
+            }
+        });
+
         hr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

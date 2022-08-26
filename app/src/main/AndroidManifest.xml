@@ -35,6 +35,9 @@
             android:name=".HeartBeatActivity"
             android:exported="false" />
         <activity
+            android:name=".BloodPressureActivity"
+            android:exported="false" />
+        <activity
             android:name=".ResultActivity"
             android:exported="false"
             android:label="@string/title_activity_result"

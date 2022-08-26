@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SIH</string>
+    <string name="app_name">Visara</string>
     <string name="title_activity_result">ResultActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

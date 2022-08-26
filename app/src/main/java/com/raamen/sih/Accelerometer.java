@@ -55,9 +55,11 @@ public class Accelerometer extends AppCompatActivity implements SensorEventListe
                 int peaks = printPeaksTroughs(arr2, arr2.length);
                 Log.i("hellopeaks", Integer.toString(peaks*2));
 
+
+
                 Intent intent = new Intent(Accelerometer.this, ResultActivity.class);
                 intent.putExtra("name", "Respiratory Rate");
-                intent.putExtra("score", (double) peaks*2);
+                intent.putExtra("score",  peaks*2);
                 intent.putExtra("normal", "12 - 16");
                 startActivity(intent);
                 finish();

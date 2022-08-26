@@ -42,7 +42,11 @@ public class ResultActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             name.setText(intent.getStringExtra("name"));
-            score.setText(intent.getDoubleExtra("score", 0) != -1 ? Double.toString(intent.getDoubleExtra("score", 0)): "Insufficient data");
+            if (intent.getStringExtra("name").equals("Blood Pressure"))
+                score.setText(intent.getStringExtra("score"));
+            else
+                score.setText(intent.getIntExtra("score", 0) != -1 ? Integer.toString(intent.getIntExtra("score", 0)): "Insufficient data");
+
             normal.setText("Normal range\n" + intent.getStringExtra("normal"));
 
             DatabaseReference database = FirebaseDatabase.getInstance("https://sih-raamen-default-rtdb.firebaseio.com/").getReference("username");
