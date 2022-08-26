@@ -1,98 +1,96 @@
 package com.raamen.sih;
 
-import android.content.Context;
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.hardware.Camera;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
-import android.os.PowerManager;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.Surface;
+import android.view.TextureView;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class HeartBeatActivity extends AppCompatActivity {
+    public ArrayList<Integer> array;
 
-    private SurfaceView preview = null;
-    private static SurfaceHolder previewHolder = null;
-    private static Camera camera = null;
-    private static PowerManager.WakeLock wakeLock = null;
+    private final int REQUEST_CODE_CAMERA = 0;
+    public static final int MESSAGE_UPDATE_REALTIME = 1;
+    public static final int MESSAGE_UPDATE_FINAL = 2;
+    public static final int MESSAGE_CAMERA_NOT_AVAILABLE = 3;
 
-    private static long startTime = 0;
-    private ProgressBar progress;
-    public int ProgP = 0;
-    public int inc = 0;
-    public int counter = 0;
-    public boolean complete = false;
+    private static final int MENU_INDEX_NEW_MEASUREMENT = 0;
+    private static final int MENU_INDEX_EXPORT_RESULT = 1;
+    private static final int MENU_INDEX_EXPORT_DETAILS = 2;
 
-    public ArrayList<Double> AvgList = new ArrayList<>();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        preview = findViewById(R.id.preview);
-        previewHolder = preview.getHolder();
-        previewHolder.addCallback(surfaceCallback);
-        previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        progress = findViewById(R.id.HRPB);
-        progress.setProgress(0);
-
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, ":DoNotDimScreen");
+    public enum VIEW_STATE {
+        MEASUREMENT,
+        SHOW_RESULTS
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
+    private boolean justShared = false;
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        wakeLock.acquire();
-        camera = Camera.open();
-        camera.setDisplayOrientation(90);
-        startTime = System.currentTimeMillis();
-    }
+    @SuppressLint("HandlerLeak")
+    private final Handler mainHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        wakeLock.release();
-        camera.setPreviewCallback(null);
-        camera.stopPreview();
-        camera.release();
-        camera = null;
-    }
+            if (msg.what ==  MESSAGE_UPDATE_REALTIME) {
+                //((TextView) findViewById(R.id.textView)).setText(msg.obj.toString());
+            }
+
+            if (msg.what == MESSAGE_UPDATE_FINAL) {
+                //((EditText) findViewById(R.id.editText)).setText(msg.obj.toString());
+
+                // make sure menu items are enabled when it opens.
+                //Menu appMenu = ((Toolbar) findViewById(R.id.toolbar)).getMenu();
+
+                //setViewState(VIEW_STATE.SHOW_RESULTS);
+            }
+
+            if (msg.what == MESSAGE_CAMERA_NOT_AVAILABLE) {
+                Log.println(Log.WARN, "camera", msg.obj.toString());
+
+//                ((TextView) findViewById(R.id.textView)).setText(
+//                        R.string.camera_not_found
+//                );
+                //analyzer.stop();
+            }
+        }
+    };
 
     public boolean isPeak(double arr[], int n, double num, int i, int j)
     {
-        if (i >= 0 && arr[i] > num)
+        if (i >= 0 && arr[i] >= num)
             return false;
 
-        if (j < n && arr[j] > num)
+        if (j < n && arr[j] >= num)
             return false;
         return true;
     }
@@ -113,111 +111,105 @@ public class HeartBeatActivity extends AppCompatActivity {
         return count;
     }
 
-    private final Camera.PreviewCallback previewCallback = new Camera.PreviewCallback() {
+    private final CameraService cameraService = new CameraService(this, mainHandler);
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void onPreviewFrame(byte[] data, Camera cam) {
-            if (data == null) throw new NullPointerException();
-            Camera.Size size = cam.getParameters().getPreviewSize();
-            if (size == null) throw new NullPointerException();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-            if (!complete) {
+        TextureView cameraTextureView = findViewById(R.id.textureView);
+        SurfaceTexture previewSurfaceTexture = cameraTextureView.getSurfaceTexture();
 
-                int width = size.width;
-                int height = size.height;
+        // justShared is set if one clicks the share button.
+        if ((previewSurfaceTexture != null) && !justShared) {
+            // this first appears when we close the application and switch back
+            // - TextureView isn't quite ready at the first onResume.
+            Surface previewSurface = new Surface(previewSurfaceTexture);
 
-                double avg = ImageProcessing.redAverage(data.clone(), height, width);
+            // show warning when there is no flash
 
-                if (avg < 200) {
-                    Toast.makeText(HeartBeatActivity.this, "Retrying measurement", Toast.LENGTH_SHORT).show();
-                } else {
-                    AvgList.add(avg);
-                }
 
-                long endTime = System.currentTimeMillis();
-                double totalTimeInSecs = (endTime - startTime) / 1000d;
-                if (totalTimeInSecs >= 15) {
-                    complete = true;
-                    Log.i("helloavg", AvgList.toString());
+            // hide the new measurement item while another one is in progress in order to wait
+            // for the previous one to finish
+            //((Toolbar) findViewById(R.id.toolbar)).getMenu().getItem(MENU_INDEX_NEW_MEASUREMENT).setVisible(false);
 
-                    double[] arr = new double[AvgList.size()];
+            cameraService.start(previewSurface);
+            measurePulse(cameraTextureView, cameraService);
+        }
+    }
 
-                    for (int i = 0; i < AvgList.size(); i++) {
-                        arr[i] = AvgList.get(i);
+    void measurePulse(TextureView textureView, CameraService cameraService) {
+
+        // 20 times a second, get the amount of red on the picture.
+        final int measurementInterval = 45;
+        final int measurementLength = 15000;
+        final int clipLength = 3500;
+        final int[] ticksPassed = {0};
+
+        CountDownTimer timer = new CountDownTimer(measurementLength, measurementInterval) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (clipLength > (++ticksPassed[0] * measurementInterval)) return;
+
+                Thread thread = new Thread(() -> {
+                    Bitmap currentBitmap = textureView.getBitmap();
+                    Bitmap newBitmap = Bitmap.createScaledBitmap(currentBitmap, 84, 84, false);
+                    int pixelCount = newBitmap.getWidth() * newBitmap.getHeight();
+                    int measurement = 0;
+                    int[] pixels = new int[pixelCount];
+
+                    newBitmap.getPixels(pixels, 0, newBitmap.getWidth(), 0, 0, newBitmap.getWidth(), newBitmap.getHeight());
+
+                    for (int pixelIndex = 0; pixelIndex < pixelCount; pixelIndex++) {
+                        measurement += (pixels[pixelIndex] >> 16) & 0xff;
                     }
 
-                    int peaks = printPeaksTroughs(arr, arr.length);
-                    Log.i("hellopeak", Integer.toString(peaks));
+                    array.add(measurement);
 
+                });
+                thread.start();
+            }
 
-                    Intent intent = new Intent(HeartBeatActivity.this, ResultActivity.class);
-                    intent.putExtra("name", "Heart Rate");
-                    intent.putExtra("score", peaks < 50 ? (double) -1 : (double) peaks);
-                    intent.putExtra("normal", "60 - 100");
-                    startActivity(intent);
-                    finish();
+            @Override
+            public void onFinish() {
+                Log.i("helloarr", array.toString());
 
+                double[] arr = new double[array.size()];
 
+                for (int i = 0; i < array.size(); i++) {
+                    arr[i] = array.get(i);
                 }
-                ++counter;
 
-                ProgP = inc++ / 16;
-                progress.setProgress(ProgP);
+                int peaks = printPeaksTroughs(arr, arr.length);
+                Log.i("hellopeak", Integer.toString(peaks*2));
 
+                if (cameraService != null)
+                    cameraService.stop();
+
+                Intent intent = new Intent(HeartBeatActivity.this, ResultActivity.class);
+                intent.putExtra("name", "Heart Rate");
+                intent.putExtra("score", (peaks*2) < 50 ? (double) -1 : (double) peaks*2);
+                intent.putExtra("normal", "60 - 100");
+                startActivity(intent);
+                finish();
             }
-        }
-    };
+        };
 
-    private final SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+        timer.start();
+    }
 
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            try {
-                camera.setPreviewDisplay(previewHolder);
-                camera.setPreviewCallback(previewCallback);
-            } catch (Throwable t) {
-                Log.e("PreviewDemo-surfaceCallback", "Exception in setPreviewDisplay()", t);
-            }
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cameraService.stop();
+    }
 
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_heartbeat);
 
-            Camera.Parameters parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-
-            Camera.Size size = getSmallestPreviewSize(width, height, parameters);
-//            if (size != null) {
-//                parameters.setPreviewSize(size.width, size.height);
-//                Log.d(TAG, "Using width=" + size.width + " height=" + size.height);
-//            }
-
-            camera.setParameters(parameters);
-            camera.startPreview();
-        }
-
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-        }
-    };
-
-    private static Camera.Size getSmallestPreviewSize(int width, int height, Camera.Parameters parameters) {
-        Camera.Size result = null;
-        for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
-            if (size.width <= width && size.height <= height) {
-                if (result == null) {
-                    result = size;
-                } else {
-                    int resultArea = result.width * result.height;
-                    int newArea = size.width * size.height;
-                    if (newArea < resultArea) result = size;
-                }
-            }
-        }
-        return result;
+        array = new ArrayList<>();
     }
 }
