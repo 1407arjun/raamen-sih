@@ -28,3 +28,11 @@ Build an application that can calculate SpO2, Blood Pressure, Stress or any othe
 
 ### Blood Pressure
 <img width="253" alt="image" src="https://user-images.githubusercontent.com/76874556/187170797-3231fc27-5e7e-4bea-bb89-88001ca2e534.png">
+
+## Tech Stack:
+<a href="https://developer.android.com/studio" title="Android"><img src="https://github.com/get-icon/geticon/raw/master/icons/android-icon.svg" alt="Android" width="50px" height="50px"></a>
+<a href="https://www.java.com/" title="Java"><img src="https://github.com/get-icon/geticon/raw/master/icons/java.svg" alt="Java" width="50px" height="50px"></a>
+<a href="https://flask.palletsprojects.com/en/2.2.x/" title="Flask"><img src="https://github.com/get-icon/geticon/raw/master/icons/flask.svg" alt="Flask" width="50px" height="50px"></a>
+<a href="https://www.python.org/" title="Python"><img src="https://github.com/get-icon/geticon/raw/master/icons/python.svg" alt="Python" width="50px" height="50px"></a>
+<a href="https://www.firebase.com/" title="Firebase"><img src="https://github.com/get-icon/geticon/raw/master/icons/firebase.svg" alt="Firebase" width="50px" height="50px"></a>
+<a href="https://www.figma.com/" title="Figma"><img src="https://github.com/get-icon/geticon/raw/master/icons/figma.svg" alt="Figma" width="50px" height="50px"></a>
